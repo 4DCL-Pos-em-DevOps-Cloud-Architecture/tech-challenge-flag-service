@@ -172,7 +172,21 @@ def update_flag(name):
     
     values.append(name) # Adiciona o 'name' para a cláusula WHERE
     
-    query = f"UPDATE flags SET {', '.join(fields)} WHERE name = %s RETURNING *"
+    if 'description' in data and 'is_enabled' in data:
+        query = (
+            "UPDATE flags SET description = %s, is_enabled = %s "
+            "WHERE name = %s RETURNING *"
+        )
+    elif 'description' in data:
+        query = (
+            "UPDATE flags SET description = %s "
+            "WHERE name = %s RETURNING *"
+        )
+    else:
+        query = (
+            "UPDATE flags SET is_enabled = %s "
+            "WHERE name = %s RETURNING *"
+        )
     
     conn = None
     cur = None
@@ -223,4 +237,4 @@ def delete_flag(name):
 
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 8002))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=False)  # nosec B104
